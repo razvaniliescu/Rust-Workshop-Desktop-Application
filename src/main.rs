@@ -1,6 +1,8 @@
+use std::f32::RADIX;
+
 use lazy_static::lazy_static;
 use regex::Regex;
-use slint::include_modules;
+use slint::{include_modules, SharedString};
 
 include_modules!();
 
@@ -16,7 +18,22 @@ fn main() -> Result<(), slint::PlatformError> {
     // TASK: Adaugă logica pentru `on_add_to_text_area`, pentru a manevra cazurile "C", "=", și alte input-uri
     ui.on_add_to_text_area(move |current_text, new_input| {
         let ui = ui_handle.unwrap();
-
+        
+        match new_input.as_str() {
+            "=" => {
+                let result = evaluate(&current_text);
+                ui.set_textarea(SharedString::from(result));
+            }
+            "Clear" => {
+                let clear = SharedString::from("");
+                ui.set_textarea(clear);
+            }
+            _ =>  {
+                let mut textarea = ui.get_textarea();
+                textarea.push_str(&new_input);
+                ui.set_textarea(textarea);
+            }
+        }
         // TASK: Adaugă logica pentru cazurile:
         // - "C": Golirea zonei de text
         // - "=": Calcularea rezultatului și afișarea acestuia
@@ -31,7 +48,18 @@ fn main() -> Result<(), slint::PlatformError> {
 // HINT: Folosește regex-ul `VALID_EXPRESSION` pentru a verifica dacă `input` este o expresie validă.
 // Dacă expresia este validă, apelează funcția `compute`. Dacă nu, returnează un mesaj de eroare, cum ar fi "Invalid Expression".
 fn evaluate(input: &str) -> String {
-    todo!() // <-- Înlocuiește `todo!()` cu implementarea funcției
+    match VALID_EXPRESSION.is_match(input) {
+        true => {
+            match compute(input) {
+                Some(u) => u.to_string(),
+                None => input.to_string()
+            }
+        }
+        false => {
+            println!("Invalid Expression");
+            input.to_string()
+        }
+    }
 }
 
 // TASK: Implementează funcția `compute` pentru a realiza operațiile de bază (+, -, *, /) și a returna rezultatul
@@ -40,6 +68,45 @@ fn evaluate(input: &str) -> String {
 fn compute(input: &str) -> Option<f64> {
     // TASK: Inițializează simbolurile de operare (+, -, *, /)
     // HINT: Creează o listă `let symbols = ["+", "-", "*", "/"];`
-
-    None // <-- Returnează None dacă nu găsește niciun simbol valid
+    // let mut result: f64 = 0.0;
+    // let mut aux: f64 = 0.0;
+    // let mut current_number = 0.0;
+    // let mut decimals = false;
+    // let mut power: f64 = 1.0;
+    let symbols = ['+', '-', '*', '/'];
+    let mut delimiter = 'a';
+    for c in input.chars() {
+        if symbols.contains(&c) {
+            delimiter = c;
+            break;
+        }
+    }
+    let v: Vec<&str> = input.split(delimiter).collect();
+    let nr1_chars = v[0].chars();
+    let mut nr1: f64 = 0.0;
+    for ch in nr1_chars {
+        nr1 = nr1 * 10.0 + ch.to_digit(RADIX).unwrap() as f64;
+    }
+    let nr2_chars = v[1].chars();
+    let mut nr2: f64 = 0.0;
+    for ch in nr2_chars {
+        nr2 = nr2 * 10.0 + ch.to_digit(RADIX).unwrap() as f64;
+    }
+    match delimiter {
+        '+' => {
+            return Some(nr1 + nr2);
+        }
+        '-' => {
+            return Some(nr1 - nr2);
+        }
+        '*' => {
+            return Some(nr1 * nr2);
+        }
+        '/' => {
+            return Some(nr1 / nr2);
+        }
+        _ => {
+            return None;
+        }
+    }
 }
