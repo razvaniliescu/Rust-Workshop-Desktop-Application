@@ -26,6 +26,7 @@ export component AppWindow inherits Window {
 		// TASK: Creează un TextEdit pentru zona de text a calculatorului.
 		// HINT: Setează lățimea la 600px și înălțimea la 200px.
 		text_box := TextEdit {
+			font-size: 36px;
 			width: 600px;
 			height: 200px;
 			text: textarea; // Leagă `textarea` la textul afișat în acest `TextEdit`
@@ -72,31 +73,31 @@ export component AppWindow inherits Window {
 			row: 2;
 
 			Button {
-				text: "1";
+				text: "4";
 				clicked => {
 					add_to_text_area(text-box.text, "4");
 				}
 			   }
 			   Button {
-				text: "2";
+				text: "5";
 				clicked => {
 					add_to_text_area(text-box.text, "5");
 				}
 			   }
 			   Button {
-				text: "3";
+				text: "6";
 				clicked => {
 					add_to_text_area(text-box.text, "6");
 				}
 			   }
 			   Button {
-				text: "+";
+				text: "*";
 				clicked => {
 					add_to_text_area(text-box.text, "*");
 				}
 			   }
 			   Button {
-				text: "-";
+				text: "/";
 				clicked => {
 					add_to_text_area(text-box.text, "/");
 				}

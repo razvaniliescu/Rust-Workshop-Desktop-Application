@@ -1,5 +1,3 @@
-use std::f32::RADIX;
-
 use lazy_static::lazy_static;
 use regex::Regex;
 use slint::{include_modules, SharedString};
@@ -66,33 +64,29 @@ fn evaluate(input: &str) -> String {
 // HINT: Parcurge simbolurile de operare și folosește `.split()` pentru a împărți `input` în două părți: înainte și după simbol.
 // Convertește fiecare parte în `f64` și returnează rezultatul în funcție de simbol.
 fn compute(input: &str) -> Option<f64> {
-    // TASK: Inițializează simbolurile de operare (+, -, *, /)
-    // HINT: Creează o listă `let symbols = ["+", "-", "*", "/"];`
-    // let mut result: f64 = 0.0;
-    // let mut aux: f64 = 0.0;
-    // let mut current_number = 0.0;
-    // let mut decimals = false;
-    // let mut power: f64 = 1.0;
     let symbols = ['+', '-', '*', '/'];
     let mut delimiter = 'a';
+    let mut operation= 'a';
     for c in input.chars() {
         if symbols.contains(&c) {
-            delimiter = c;
+            delimiter = c.clone();
+            operation = c.clone();
             break;
         }
     }
+    println!("{delimiter}");
     let v: Vec<&str> = input.split(delimiter).collect();
     let nr1_chars = v[0].chars();
     let mut nr1: f64 = 0.0;
     for ch in nr1_chars {
-        nr1 = nr1 * 10.0 + ch.to_digit(RADIX).unwrap() as f64;
+        nr1 = nr1 * 10.0 + (ch as i64 - 0x30) as f64;
     }
     let nr2_chars = v[1].chars();
     let mut nr2: f64 = 0.0;
     for ch in nr2_chars {
-        nr2 = nr2 * 10.0 + ch.to_digit(RADIX).unwrap() as f64;
+        nr2 = nr2 * 10.0 + (ch as i64 - 0x30) as f64;
     }
-    match delimiter {
+    match operation {
         '+' => {
             return Some(nr1 + nr2);
         }
